@@ -1,34 +1,88 @@
-/* L'arrière-plan sombre qui couvre tout l'écran */
+/* ============================================================
+   MODALS — Feuille de style harmonisée
+   Variables, base, composants, utilitaires
+   ============================================================ */
+
+/* ── Variables ─────────────────────────────────────────────── */
+:root {
+  --bg-dark:        #111114;
+  --bg-card:        rgba(255, 255, 255, 0.04);
+  --bg-card-hover:  rgba(255, 255, 255, 0.07);
+  --bg-input:       rgba(255, 255, 255, 0.05);
+  --border:         rgba(255, 255, 255, 0.09);
+  --border-focus:   rgba(255, 255, 255, 0.25);
+
+  --text-primary:   #f0f0f2;
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted:     rgba(255, 255, 255, 0.30);
+
+  --green:   #4ade80;
+  --red:     #f87171;
+  --blue:    #60a5fa;
+  --yellow:  #fbbf24;
+
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-xl:  24px;
+
+  --sheet-bg: rgba(18, 18, 22, 0.92);
+  --overlay-bg: rgba(0, 0, 0, 0.65);
+
+  --transition: 0.18s ease;
+}
+
+/* ── Overlay ────────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  inset: 0;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 100;
   display: flex;
-  align-items: flex-end; /* Aligne le contenu en bas */
+  align-items: flex-end;
   justify-content: center;
-  animation: fadeIn 0.2s ease-out;
+  animation: overlayIn 0.2s ease-out;
 }
 
-/* Le tiroir en lui-même */
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Bottom sheet ───────────────────────────────────────────── */
 .bottom-sheet {
   width: 100%;
-  max-width: 500px;
-  background: rgba(30, 30, 30, 0.85); /* Un peu plus opaque pour la lisibilité du formulaire */
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  padding: 24px;
-  padding-bottom: env(safe-area-inset-bottom, 24px); /* S'adapte à la barre d'accueil iPhone */
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 520px;
+  background: var(--sheet-bg);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 24px 24px env(safe-area-inset-bottom, 28px);
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  animation: sheetUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Scrollbar discrète */
+.bottom-sheet::-webkit-scrollbar { width: 3px; }
+.bottom-sheet::-webkit-scrollbar-track { background: transparent; }
+.bottom-sheet::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Glass card (variante utilisée dans certains sheets) ────── */
+.glass-card {
+  background: var(--sheet-bg);
+  border: 1px solid var(--border);
+}
+
+/* ── Sheet header ───────────────────────────────────────────── */
 .sheet-header {
   display: flex;
   justify-content: space-between;
@@ -38,150 +92,488 @@
 
 .sheet-header h3 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
 }
 
 .close-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: var(--text-secondary);
   cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  flex-shrink: 0;
 }
 
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+}
+
+/* ── Sheet form ─────────────────────────────────────────────── */
 .sheet-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
+/* ── Input group ────────────────────────────────────────────── */
 .input-group-vertical {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
-.input-group-vertical label {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.submit-expense-btn {
-  background: white;
-  color: var(--bg-dark);
-  border: none;
-  border-radius: 12px;
-  padding: 16px;
-  font-size: 16px;
+.input-group-vertical label,
+.card-label {
+  font-size: 11px;
   font-weight: 600;
-  cursor: pointer;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* ── Inputs & Select ────────────────────────────────────────── */
+input,
+select {
+  width: 100%;
+  padding: 11px 13px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color var(--transition), background var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+input:focus,
+select:focus {
+  border-color: var(--border-focus);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+select option {
+  background: #1c1c22;
+  color: var(--text-primary);
+}
+
+/* ── Bouton submit principal ────────────────────────────────── */
+.submit-expense-btn {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin-top: 8px;
-  transition: opacity 0.2s;
+  width: 100%;
+  padding: 15px;
+  margin-top: 4px;
+  background: var(--text-primary);
+  color: var(--bg-dark);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: opacity var(--transition), transform var(--transition);
 }
 
-.submit-expense-btn:active {
-  opacity: 0.8;
+.submit-expense-btn:hover  { opacity: 0.9; }
+.submit-expense-btn:active { opacity: 0.75; transform: scale(0.99); }
+.submit-expense-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.error-message {
-  color: #ff6b6b;
+/* ── Bouton icône (AddFixExpenseTemplate / IncomeManager) ───── */
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 13px;
+  background: var(--text-primary);
+  color: var(--bg-dark);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: opacity var(--transition);
+  flex-shrink: 0;
+}
+
+.icon-button:hover    { opacity: 0.85; }
+.icon-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Boutons actions profil ─────────────────────────────────── */
+.profile-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
   font-size: 14px;
-  margin: 0;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition), border-color var(--transition);
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.profile-action-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-focus);
 }
 
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
+.profile-action-btn.text-red { color: var(--red); }
 
-/* --- Ajouts pour les nouveaux éléments --- */
-
+/* ── Radio group ────────────────────────────────────────────── */
 .radio-group {
   display: flex;
-  gap: 10px;
-  margin-top: 5px;
+  gap: 8px;
 }
 
 .radio-btn {
   flex: 1;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white;
-  font-size: 14px;
+  padding: 11px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition);
+  text-align: center;
 }
 
 .radio-btn.active {
-  background: white;
-  color: #1a1a1a;
-  font-weight: 600;
+  background: var(--text-primary);
+  color: var(--bg-dark);
+  font-weight: 650;
+  border-color: transparent;
 }
 
-select {
-  width: 100%;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white;
-  font-size: 15px;
+/* ── List wrapper ───────────────────────────────────────────── */
+.list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
-input {
-  width: 100%;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white;
-  box-sizing: border-box;
-}
+.list-wrapper::-webkit-scrollbar { width: 3px; }
+.list-wrapper::-webkit-scrollbar-track { background: transparent; }
+.list-wrapper::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
 
-/* Ajoute ceci dans ton fichier CSS global ou celui de la modal */
+/* ── List item ──────────────────────────────────────────────── */
 .list-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  margin-bottom: 8px;
+  gap: 8px;
+  padding: 11px 13px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: background var(--transition);
 }
 
+.list-item:hover { background: var(--bg-card-hover); }
+
+.list-item .font-medium   { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.list-item .font-semibold { font-size: 14px; font-weight: 650; }
+
+/* ── Card label (titre de section) ─────────────────────────── */
+.card-label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* ── Couleurs utilitaires ───────────────────────────────────── */
+.text-green { color: var(--green); }
+.text-red   { color: var(--red);   }
+.text-blue  { color: var(--blue);  }
+
+/* ── Divider ────────────────────────────────────────────────── */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+/* ── Spinner (Loader2) ──────────────────────────────────────── */
+.spinner {
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Empty state ────────────────────────────────────────────── */
 .empty-state {
   text-align: center;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+  font-size: 13px;
 }
 
 .empty-state button {
   background: none;
   border: none;
-  color: #a8e0ff;
+  color: var(--blue);
   text-decoration: underline;
   cursor: pointer;
   margin-top: 8px;
+  font-size: 13px;
+}
+
+/* ── Error message ──────────────────────────────────────────── */
+.error-message {
+  color: var(--red);
+  font-size: 13px;
+  padding: 10px 12px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: var(--radius-sm);
+  margin: 0;
+}
+
+/* ── Flex helpers (remplace les classes Tailwind inline) ────── */
+.flex          { display: flex; }
+.flex-col      { flex-direction: column; }
+.items-center  { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-1  { gap: 4px; }
+.gap-2  { gap: 8px; }
+.gap-3  { gap: 12px; }
+.ml-auto { margin-left: auto; }
+.mr-3    { margin-right: 12px; }
+.mt-4    { margin-top: 16px; }
+
+/* ── Input inline row (AddFixExpenseTemplate / IncomeManager) ── */
+.inline-add-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.inline-add-row input { flex: 1; }
+.inline-add-row input.w-small { flex: 0 0 80px; }
+
+/* ============================================================
+   STARTMONTHMODAL — Ajouts à intégrer dans modals.css
+   ============================================================ */
+
+/* ── Scroll interne du formulaire ───────────────────────────── */
+.month-form-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 72dvh;
+  overflow-y: auto;
+  padding-right: 2px;
+  padding-bottom: 4px;
+}
+
+.month-form-scroll::-webkit-scrollbar { width: 3px; }
+.month-form-scroll::-webkit-scrollbar-track { background: transparent; }
+.month-form-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* ── Section (card groupée façon iOS) ───────────────────────── */
+.month-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: visible; /* ne pas couper les inputs */
+  margin-bottom: 8px;
+}
+
+/* ── Section header ─────────────────────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 14px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.section-header.color-green { color: var(--green); }
+.section-header.color-red   { color: var(--red);   }
+.section-header.color-blue  { color: var(--blue);  }
+
+/* ── Ligne vide ─────────────────────────────────────────────── */
+.empty-row {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ── Salaire row ────────────────────────────────────────────── */
+.salary-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px 14px;
+}
+
+.salary-input {
+  flex: 2;
+}
+
+.salary-select {
+  flex: 2;
+}
+
+/* ── Check row ──────────────────────────────────────────────── */
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.check-row:last-child {
+  border-bottom: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+.check-row:active { background: var(--bg-card-hover); }
+
+/* ── Checkbox iOS-style ─────────────────────────────────────── */
+.checkbox-custom {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-focus);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: all 0.15s ease;
+  color: var(--bg-dark);
+}
+
+.checkbox-custom.checked {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+/* ── Contenu d'une check-row ────────────────────────────────── */
+.check-row__label {
+  flex: 2;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.check-row__amount {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 70px;
+}
+
+.check-row__spacer {
+  flex-shrink: 0;
+  width: 80px;
+}
+
+/* Transfer label + sous-titre route */
+.check-row__transfer {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.check-row__route {
+  font-size: 10px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Select inline dans une check-row ──────────────────────── */
+.inline-account-select {
+  flex-shrink: 0;
+  width: 80px;
+  padding: 5px 6px;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  -webkit-appearance: none;
+  appearance: none;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* ── Revenus directs (lecture seule) ─────────────────────────── */
+.direct-saving-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+
+.direct-saving-row:last-child { border-bottom: none; }
+
+/* ── Couleurs utilitaires montants ──────────────────────────── */
+.color-green { color: var(--green); }
+.color-red   { color: var(--red);   }
+.color-blue  { color: var(--blue);  }
+
+/* Masquer les flèches sur tous les navigateurs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
 }

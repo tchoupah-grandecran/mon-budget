@@ -1,9 +1,50 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { X, Check, Loader2, ArrowRightLeft, PiggyBank, ArrowDown, ArrowUp, ArrowRight } from 'lucide-react'
+import { X, Check, Loader2, ArrowRightLeft, PiggyBank, ArrowDown, ArrowUp, Coins } from 'lucide-react'
+
+function SectionHeader({ icon, label, colorClass }) {
+  return (
+    <div className={`section-header ${colorClass}`}>
+      {icon}
+      <span>{label}</span>
+    </div>
+  )
+}
+
+function EmptyRow({ label }) {
+  return <p className="empty-row">{label}</p>
+}
+
+function CheckRow({ checked, onClick, children }) {
+  return (
+    <div
+      className={`check-row ${checked ? 'check-row--checked' : ''}`}
+      onClick={onClick}
+    >
+      <div className={`checkbox-custom ${checked ? 'checked' : ''}`}>
+        {checked && <Check size={11} strokeWidth={3}/>}
+      </div>
+      {children}
+    </div>
+  )
+}
+
+function InlineSelect({ value, options, onChange, onClick }) {
+  return (
+    <select
+      className="inline-account-select"
+      value={value}
+      onChange={onChange}
+      onClick={onClick}
+    >
+      {options.map(acc => (
+        <option key={acc.id} value={acc.id}>{acc.nom}</option>
+      ))}
+    </select>
+  )
+}
 
 export default function StartMonthModal({ isOpen, onClose, currentBalance, targetMonth, onSuccess }) {
-  // Raw data from DB
   const [accounts, setAccounts] = useState([])
   const [fixedIncomes, setFixedIncomes] = useState([])
   const [fixedExpenses, setFixedExpenses] = useState([])
@@ -11,14 +52,11 @@ export default function StartMonthModal({ isOpen, onClose, currentBalance, targe
   const [internalTransfers, setInternalTransfers] = useState([])
   const [directSavingsIncomes, setDirectSavingsIncomes] = useState([])
 
-  // Checked/unchecked selection per item
   const [selectedIncomes, setSelectedIncomes] = useState([])
   const [selectedExpenses, setSelectedExpenses] = useState([])
   const [selectedSavings, setSelectedSavings] = useState([])
   const [selectedTransfers, setSelectedTransfers] = useState([])
 
-  // Per-item bank account overrides (item id → bank account id)
-  // FIX: initialized to the first bank account (not a non-existent `compte_id` field)
   const [incomeAccounts, setIncomeAccounts] = useState({})
   const [expenseAccounts, setExpenseAccounts] = useState({})
   const [savingAccounts, setSavingAccounts] = useState({})
@@ -40,74 +78,50 @@ export default function StartMonthModal({ isOpen, onClose, currentBalance, targe
         supabase.from('comptes_bancaires').select('*').eq('user_id', user.id),
         supabase.from('revenus_fixes_modeles').select('*').eq('user_id', user.id),
         supabase.from('charges_fixes_modeles').select('*').eq('user_id', user.id),
-        supabase
-          .from('epargne_forcee')
+        supabase.from('epargne_forcee')
           .select('id, montant_mensuel, sous_compte_id, compte_id, sous_comptes_epargne(nom)')
           .eq('user_id', user.id),
-        supabase
-          .from('virements_internes_modeles')
-          .select(`
-            id, nom, montant, compte_origine_id, compte_destination_id,
+        supabase.from('virements_internes_modeles')
+          .select(`id, nom, montant, compte_origine_id, compte_destination_id,
             origine:comptes_bancaires!compte_origine_id(nom),
-            destination:comptes_bancaires!compte_destination_id(nom)
-          `)
+            destination:comptes_bancaires!compte_destination_id(nom)`)
           .eq('user_id', user.id),
-        // FIX: fetch revenus_directs_epargne so they are applied to savings envelopes on month start
-        supabase
-          .from('revenus_directs_epargne')
+        supabase.from('revenus_directs_epargne')
           .select('id, montant, sous_compte_id, sous_comptes_epargne(nom)')
           .eq('user_id', user.id)
       ])
 
-      const userBanks = bankRes.data || []
-      // The id of the first bank account — used as the safe default everywhere
+      const userBanks   = bankRes.data   || []
       const firstBankId = userBanks.length > 0 ? userBanks[0].id : ''
+      const incomes     = incRes.data    || []
+      const expenses    = expRes.data    || []
+      const savings     = savRes.data    || []
+      const transfers   = transRes.data  || []
+      const direct      = directRes.data || []
 
       setAccounts(userBanks)
       setSalaryAccount(firstBankId)
-
-      const incomes   = incRes.data   || []
-      const expenses  = expRes.data   || []
-      const savings   = savRes.data   || []
-      const transfers = transRes.data || []
-      const direct    = directRes.data || []
-
       setFixedIncomes(incomes)
       setFixedExpenses(expenses)
       setForcedSavings(savings)
       setInternalTransfers(transfers)
       setDirectSavingsIncomes(direct)
 
-      // Check everything by default
       setSelectedIncomes(incomes.map(i => i.id))
       setSelectedExpenses(expenses.map(e => e.id))
       setSelectedSavings(savings.map(s => s.id))
       setSelectedTransfers(transfers.map(t => t.id))
 
-      // FIX: revenus_fixes_modeles and charges_fixes_modeles have no compte_id column.
-      // Default every item to the first bank account instead of reading a non-existent field.
-      setIncomeAccounts(
-        incomes.reduce((acc, curr) => ({ ...acc, [curr.id]: firstBankId }), {})
-      )
-      setExpenseAccounts(
-        expenses.reduce((acc, curr) => ({ ...acc, [curr.id]: firstBankId }), {})
-      )
-      // epargne_forcee DOES have compte_id — use it when available, else fall back to first bank
-      setSavingAccounts(
-        savings.reduce((acc, curr) => ({
-          ...acc,
-          [curr.id]: curr.compte_id || firstBankId
-        }), {})
-      )
-
+      setIncomeAccounts(incomes.reduce((a, c) => ({ ...a, [c.id]: firstBankId }), {}))
+      setExpenseAccounts(expenses.reduce((a, c) => ({ ...a, [c.id]: firstBankId }), {}))
+      setSavingAccounts(savings.reduce((a, c) => ({ ...a, [c.id]: c.compte_id || firstBankId }), {}))
     } catch (err) {
       console.error('Erreur de pré-chargement du mois :', err)
     }
   }
 
-  const toggleSelection = (id, list, setList) => {
-    setList(list.includes(id) ? list.filter(item => item !== id) : [...list, id])
-  }
+  const toggle = (id, list, setList) =>
+    setList(list.includes(id) ? list.filter(x => x !== id) : [...list, id])
 
   const handleStartMonth = async () => {
     setLoading(true)
@@ -115,26 +129,12 @@ export default function StartMonthModal({ isOpen, onClose, currentBalance, targe
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Utilisateur déconnecté')
 
-      // ── 1. Budget calculations ─────────────────────────────────────────────
-
-      const totalFixedIncomes = fixedIncomes
-        .filter(i => selectedIncomes.includes(i.id))
-        .reduce((acc, curr) => acc + Number(curr.montant), 0)
-
-      const revenusTotaux = totalFixedIncomes + (parseFloat(salaireVariable) || 0)
-
-      const totalCharges = fixedExpenses
-        .filter(e => selectedExpenses.includes(e.id))
-        .reduce((acc, curr) => acc + Number(curr.montant), 0)
-
-      const totalForcedSavings = forcedSavings
-        .filter(s => selectedSavings.includes(s.id))
-        .reduce((acc, curr) => acc + Number(curr.montant_mensuel), 0)
-
+      const totalFixedIncomes    = fixedIncomes.filter(i => selectedIncomes.includes(i.id)).reduce((a, c) => a + Number(c.montant), 0)
+      const revenusTotaux        = totalFixedIncomes + (parseFloat(salaireVariable) || 0)
+      const totalCharges         = fixedExpenses.filter(e => selectedExpenses.includes(e.id)).reduce((a, c) => a + Number(c.montant), 0)
+      const totalForcedSavings   = forcedSavings.filter(s => selectedSavings.includes(s.id)).reduce((a, c) => a + Number(c.montant_mensuel), 0)
       const depensesFixesTotales = totalCharges + totalForcedSavings
-      const resteAVivre = currentBalance + revenusTotaux - depensesFixesTotales
-
-      // ── 2. Fetch fresh balances for mutation ───────────────────────────────
+      const resteAVivre          = currentBalance + revenusTotaux - depensesFixesTotales
 
       const [bankSnap, savSnap] = await Promise.all([
         supabase.from('comptes_bancaires').select('*').eq('user_id', user.id),
@@ -144,61 +144,45 @@ export default function StartMonthModal({ isOpen, onClose, currentBalance, targe
       let updatedBanks   = (bankSnap.data || []).map(a => ({ ...a }))
       let updatedSavings = (savSnap.data  || []).map(s => ({ ...s }))
 
-      // A. Salaire principal → chosen bank account
       const variableMontant = parseFloat(salaireVariable) || 0
       if (variableMontant > 0 && salaryAccount) {
         const acc = updatedBanks.find(b => b.id === salaryAccount)
         if (acc) acc.solde = Number(acc.solde) + variableMontant
       }
 
-      // B. Revenus fixes cochés → per-item chosen bank account
       fixedIncomes.filter(i => selectedIncomes.includes(i.id)).forEach(inc => {
-        const chosenId = incomeAccounts[inc.id]
-        const acc = updatedBanks.find(b => b.id === chosenId)
+        const acc = updatedBanks.find(b => b.id === incomeAccounts[inc.id])
         if (acc) acc.solde = Number(acc.solde) + Number(inc.montant)
       })
 
-      // C. Charges fixes cochées → debited from per-item chosen bank account
       fixedExpenses.filter(e => selectedExpenses.includes(e.id)).forEach(exp => {
-        const chosenId = expenseAccounts[exp.id]
-        const acc = updatedBanks.find(b => b.id === chosenId)
+        const acc = updatedBanks.find(b => b.id === expenseAccounts[exp.id])
         if (acc) acc.solde = Number(acc.solde) - Number(exp.montant)
       })
 
-      // D. Virements internes cochés → debit origin, credit destination
       internalTransfers.filter(t => selectedTransfers.includes(t.id)).forEach(trans => {
-        const srcAcc  = updatedBanks.find(b => b.id === trans.compte_origine_id)
-        const destAcc = updatedBanks.find(b => b.id === trans.compte_destination_id)
-        if (srcAcc)  srcAcc.solde  = Number(srcAcc.solde)  - Number(trans.montant)
-        if (destAcc) destAcc.solde = Number(destAcc.solde) + Number(trans.montant)
+        const src  = updatedBanks.find(b => b.id === trans.compte_origine_id)
+        const dest = updatedBanks.find(b => b.id === trans.compte_destination_id)
+        if (src)  src.solde  = Number(src.solde)  - Number(trans.montant)
+        if (dest) dest.solde = Number(dest.solde) + Number(trans.montant)
       })
 
-      // E. Épargnes forcées cochées → debit bank, credit savings envelope
       forcedSavings.filter(s => selectedSavings.includes(s.id)).forEach(sav => {
-        const chosenSourceId = savingAccounts[sav.id]
-        const srcAcc  = updatedBanks.find(b => b.id === chosenSourceId)
-        const destSav = updatedSavings.find(s => s.id === sav.sous_compte_id)
-        if (srcAcc)  srcAcc.solde         = Number(srcAcc.solde)         - Number(sav.montant_mensuel)
-        if (destSav) destSav.montant_actuel = Number(destSav.montant_actuel) + Number(sav.montant_mensuel)
+        const src  = updatedBanks.find(b => b.id === savingAccounts[sav.id])
+        const dest = updatedSavings.find(s => s.id === sav.sous_compte_id)
+        if (src)  src.solde           = Number(src.solde)           - Number(sav.montant_mensuel)
+        if (dest) dest.montant_actuel = Number(dest.montant_actuel) + Number(sav.montant_mensuel)
       })
 
-      // FIX F. Revenus directs épargne → credit savings envelope only (no bank debit — external income)
       directSavingsIncomes.forEach(dr => {
-        const destSav = updatedSavings.find(s => s.id === dr.sous_compte_id)
-        if (destSav) destSav.montant_actuel = Number(destSav.montant_actuel) + Number(dr.montant)
+        const dest = updatedSavings.find(s => s.id === dr.sous_compte_id)
+        if (dest) dest.montant_actuel = Number(dest.montant_actuel) + Number(dr.montant)
       })
 
-      // ── 3. Persist all balance changes ────────────────────────────────────
-
-      const bankUpdates    = updatedBanks.map(b =>
-        supabase.from('comptes_bancaires').update({ solde: b.solde }).eq('id', b.id)
-      )
-      const savingsUpdates = updatedSavings.map(s =>
-        supabase.from('sous_comptes_epargne').update({ montant_actuel: s.montant_actuel }).eq('id', s.id)
-      )
-      await Promise.all([...bankUpdates, ...savingsUpdates])
-
-      // ── 4. Upsert monthly budget row ───────────────────────────────────────
+      await Promise.all([
+        ...updatedBanks.map(b => supabase.from('comptes_bancaires').update({ solde: b.solde }).eq('id', b.id)),
+        ...updatedSavings.map(s => supabase.from('sous_comptes_epargne').update({ montant_actuel: s.montant_actuel }).eq('id', s.id))
+      ])
 
       const { error } = await supabase.from('budgets_mensuels').upsert({
         user_id: user.id,
@@ -223,33 +207,36 @@ export default function StartMonthModal({ isOpen, onClose, currentBalance, targe
 
   if (!isOpen) return null
 
+  const fmt = (n) => Number(n).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="bottom-sheet glass-card" onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
         <div className="sheet-header">
           <h3>Initialiser {targetMonth?.label}</h3>
-          <button onClick={onClose} className="close-btn"><X size={20} /></button>
+          <button onClick={onClose} className="close-btn"><X size={20}/></button>
         </div>
 
-        <div className="sheet-form" style={{ maxHeight: '70vh', overflowY: 'auto', paddingRight: '4px' }}>
+        {/* Scroll zone — sans le CTA */}
+        <div className="month-form-scroll">
 
-          {/* ── 1. Salaire principal ── */}
-          <div className="input-group-vertical">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#2ecc71' }}>
-              <ArrowUp size={16} /> Mon Salaire principal (Net reçu ce mois)
-            </label>
-            <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
+          {/* 1. Salaire principal */}
+          <div className="month-section">
+            <SectionHeader icon={<ArrowUp size={14}/>} label="Salaire principal" colorClass="color-green"/>
+            <div className="salary-row">
               <input
                 type="number"
                 placeholder="Montant net (€)"
                 value={salaireVariable}
                 onChange={e => setSalaireVariable(e.target.value)}
-                style={{ flex: 2 }}
+                className="salary-input"
               />
               <select
                 value={salaryAccount}
                 onChange={e => setSalaryAccount(e.target.value)}
-                style={{ flex: 2, height: '42px' }}
+                className="salary-select"
               >
                 {accounts.map(acc => (
                   <option key={acc.id} value={acc.id}>{acc.nom}</option>
@@ -258,208 +245,131 @@ export default function StartMonthModal({ isOpen, onClose, currentBalance, targe
             </div>
           </div>
 
-          {/* ── 2. Autres revenus fixes ── */}
-          <div className="input-group-vertical">
-            <label>Autres Revenus attendus</label>
-            <div className="list-wrapper">
-              {fixedIncomes.length === 0 ? (
-                <p style={{ fontSize: '12px', opacity: 0.4, textAlign: 'center', padding: '8px' }}>
-                  Aucun revenu fixe paramétré.
-                </p>
-              ) : (
-                fixedIncomes.map(income => (
-                  <div
-                    key={income.id}
-                    className="list-item"
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
-                    onClick={() => toggleSelection(income.id, selectedIncomes, setSelectedIncomes)}
-                  >
-                    <div className={`checkbox-custom ${selectedIncomes.includes(income.id) ? 'checked' : ''}`}>
-                      {selectedIncomes.includes(income.id) && <Check size={14} />}
-                    </div>
-                    <span style={{ flex: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {income.nom}
-                    </span>
-                    <span style={{ flex: 1, textAlign: 'right', paddingRight: '8px', whiteSpace: 'nowrap', fontWeight: 600 }}>
-                      {Number(income.montant).toLocaleString('fr-FR')} €
-                    </span>
-                    <select
-                      value={incomeAccounts[income.id] || ''}
-                      onClick={e => e.stopPropagation()}
-                      onChange={e => setIncomeAccounts({ ...incomeAccounts, [income.id]: e.target.value })}
-                      className="inline-account-select"
-                      style={{ flex: 1, fontSize: '12px', padding: '4px', minWidth: 0 }}
-                    >
-                      {accounts.map(acc => (
-                        <option key={acc.id} value={acc.id}>{acc.nom}</option>
-                      ))}
-                    </select>
-                  </div>
-                ))
-              )}
-            </div>
+          {/* 2. Autres revenus fixes */}
+          <div className="month-section">
+            <SectionHeader icon={<ArrowUp size={14}/>} label="Autres revenus attendus" colorClass="color-green"/>
+            {fixedIncomes.length === 0
+              ? <EmptyRow label="Aucun revenu fixe paramétré"/>
+              : fixedIncomes.map(income => (
+                <CheckRow
+                  key={income.id}
+                  checked={selectedIncomes.includes(income.id)}
+                  onClick={() => toggle(income.id, selectedIncomes, setSelectedIncomes)}
+                >
+                  <span className="check-row__label">{income.nom}</span>
+                  <span className="check-row__amount color-green">+{fmt(income.montant)}</span>
+                  <InlineSelect
+                    value={incomeAccounts[income.id] || ''}
+                    options={accounts}
+                    onChange={e => setIncomeAccounts({ ...incomeAccounts, [income.id]: e.target.value })}
+                    onClick={e => e.stopPropagation()}
+                  />
+                </CheckRow>
+              ))
+            }
           </div>
 
-          {/* ── 3. Charges fixes ── */}
-          <div className="input-group-vertical">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#e74c3c' }}>
-              <ArrowDown size={16} /> Charges fixes prévues
-            </label>
-            <div className="list-wrapper">
-              {fixedExpenses.length === 0 ? (
-                <p style={{ fontSize: '12px', opacity: 0.4, textAlign: 'center', padding: '8px' }}>
-                  Aucune charge fixe paramétrée.
-                </p>
-              ) : (
-                fixedExpenses.map(expense => (
-                  <div
-                    key={expense.id}
-                    className="list-item"
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
-                    onClick={() => toggleSelection(expense.id, selectedExpenses, setSelectedExpenses)}
-                  >
-                    <div className={`checkbox-custom ${selectedExpenses.includes(expense.id) ? 'checked' : ''}`}>
-                      {selectedExpenses.includes(expense.id) && <Check size={14} />}
-                    </div>
-                    <span style={{ flex: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {expense.nom}
-                    </span>
-                    <span style={{ flex: 1, textAlign: 'right', paddingRight: '8px', whiteSpace: 'nowrap', fontWeight: 600 }}>
-                      {Number(expense.montant).toLocaleString('fr-FR')} €
-                    </span>
-                    <select
-                      value={expenseAccounts[expense.id] || ''}
-                      onClick={e => e.stopPropagation()}
-                      onChange={e => setExpenseAccounts({ ...expenseAccounts, [expense.id]: e.target.value })}
-                      className="inline-account-select"
-                      style={{ flex: 1, fontSize: '12px', padding: '4px', minWidth: 0 }}
-                    >
-                      {accounts.map(acc => (
-                        <option key={acc.id} value={acc.id}>{acc.nom}</option>
-                      ))}
-                    </select>
-                  </div>
-                ))
-              )}
-            </div>
+          {/* 3. Charges fixes */}
+          <div className="month-section">
+            <SectionHeader icon={<ArrowDown size={14}/>} label="Charges fixes prévues" colorClass="color-red"/>
+            {fixedExpenses.length === 0
+              ? <EmptyRow label="Aucune charge fixe paramétrée"/>
+              : fixedExpenses.map(expense => (
+                <CheckRow
+                  key={expense.id}
+                  checked={selectedExpenses.includes(expense.id)}
+                  onClick={() => toggle(expense.id, selectedExpenses, setSelectedExpenses)}
+                >
+                  <span className="check-row__label">{expense.nom}</span>
+                  <span className="check-row__amount color-red">−{fmt(expense.montant)}</span>
+                  <InlineSelect
+                    value={expenseAccounts[expense.id] || ''}
+                    options={accounts}
+                    onChange={e => setExpenseAccounts({ ...expenseAccounts, [expense.id]: e.target.value })}
+                    onClick={e => e.stopPropagation()}
+                  />
+                </CheckRow>
+              ))
+            }
           </div>
 
-          {/* ── 4. Épargnes forcées ── */}
-          <div className="input-group-vertical">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#a8e0ff' }}>
-              <PiggyBank size={16} /> Épargnes forcées automatiques
-            </label>
-            <div className="list-wrapper">
-              {forcedSavings.length === 0 ? (
-                <p style={{ fontSize: '12px', opacity: 0.4, textAlign: 'center', padding: '8px' }}>
-                  Aucune épargne automatique configurée.
-                </p>
-              ) : (
-                forcedSavings.map(saving => (
-                  <div
-                    key={saving.id}
-                    className="list-item"
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
-                    onClick={() => toggleSelection(saving.id, selectedSavings, setSelectedSavings)}
-                  >
-                    <div className={`checkbox-custom ${selectedSavings.includes(saving.id) ? 'checked' : ''}`}>
-                      {selectedSavings.includes(saving.id) && <Check size={14} />}
-                    </div>
-                    <span style={{ flex: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {saving.sous_comptes_epargne?.nom || 'Épargne'}
-                    </span>
-                    <span style={{ flex: 1, textAlign: 'right', paddingRight: '8px', whiteSpace: 'nowrap', fontWeight: 600 }}>
-                      {Number(saving.montant_mensuel).toLocaleString('fr-FR')} €
-                    </span>
-                    <select
-                      value={savingAccounts[saving.id] || ''}
-                      onClick={e => e.stopPropagation()}
-                      onChange={e => setSavingAccounts({ ...savingAccounts, [saving.id]: e.target.value })}
-                      className="inline-account-select"
-                      style={{ flex: 1, fontSize: '12px', padding: '4px', minWidth: 0 }}
-                    >
-                      {accounts.map(acc => (
-                        <option key={acc.id} value={acc.id}>{acc.nom}</option>
-                      ))}
-                    </select>
-                  </div>
-                ))
-              )}
-            </div>
+          {/* 4. Épargnes forcées */}
+          <div className="month-section">
+            <SectionHeader icon={<PiggyBank size={14}/>} label="Épargnes programmées" colorClass="color-blue"/>
+            {forcedSavings.length === 0
+              ? <EmptyRow label="Aucune épargne automatique configurée"/>
+              : forcedSavings.map(saving => (
+                <CheckRow
+                  key={saving.id}
+                  checked={selectedSavings.includes(saving.id)}
+                  onClick={() => toggle(saving.id, selectedSavings, setSelectedSavings)}
+                >
+                  <span className="check-row__label">{saving.sous_comptes_epargne?.nom || 'Épargne'}</span>
+                  <span className="check-row__amount color-blue">{fmt(saving.montant_mensuel)}</span>
+                  <InlineSelect
+                    value={savingAccounts[saving.id] || ''}
+                    options={accounts}
+                    onChange={e => setSavingAccounts({ ...savingAccounts, [saving.id]: e.target.value })}
+                    onClick={e => e.stopPropagation()}
+                  />
+                </CheckRow>
+              ))
+            }
           </div>
 
-          {/* ── 5. Virements internes ── */}
-          <div className="input-group-vertical">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#a8e0ff' }}>
-              <ArrowRightLeft size={16} /> Virements internes programmés
-            </label>
-            <div className="list-wrapper">
-              {internalTransfers.length === 0 ? (
-                <p style={{ fontSize: '12px', opacity: 0.4, textAlign: 'center', padding: '8px' }}>
-                  Aucun virement interne configuré.
-                </p>
-              ) : (
-                internalTransfers.map(transfer => (
-                  <div
-                    key={transfer.id}
-                    className="list-item"
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
-                    onClick={() => toggleSelection(transfer.id, selectedTransfers, setSelectedTransfers)}
-                  >
-                    <div className={`checkbox-custom ${selectedTransfers.includes(transfer.id) ? 'checked' : ''}`}>
-                      {selectedTransfers.includes(transfer.id) && <Check size={14} />}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: 2, minWidth: 0 }}>
-                      <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {transfer.nom}
-                      </span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', opacity: 0.4, fontSize: '10px' }}>
-                        <span>{transfer.origine?.nom || 'Source'}</span>
-                        <ArrowRight size={8} />
-                        <span>{transfer.destination?.nom || 'Cible'}</span>
-                      </div>
-                    </div>
-                    <span style={{ flex: 1, textAlign: 'right', whiteSpace: 'nowrap', paddingRight: '8px', fontWeight: 600, opacity: 0.8 }}>
-                      {Number(transfer.montant).toLocaleString('fr-FR')} €
+          {/* 5. Virements internes */}
+          <div className="month-section">
+            <SectionHeader icon={<ArrowRightLeft size={14}/>} label="Virements internes" colorClass="color-blue"/>
+            {internalTransfers.length === 0
+              ? <EmptyRow label="Aucun virement interne configuré"/>
+              : internalTransfers.map(transfer => (
+                <CheckRow
+                  key={transfer.id}
+                  checked={selectedTransfers.includes(transfer.id)}
+                  onClick={() => toggle(transfer.id, selectedTransfers, setSelectedTransfers)}
+                >
+                  <div className="check-row__transfer">
+                    <span className="check-row__label">{transfer.nom}</span>
+                    <span className="check-row__route">
+                      {transfer.origine?.nom || '?'} → {transfer.destination?.nom || '?'}
                     </span>
-                    {/* Spacer to align with other rows that have a select */}
-                    <div style={{ flex: 1 }} />
                   </div>
-                ))
-              )}
-            </div>
+                  <span className="check-row__amount color-blue">{fmt(transfer.montant)}</span>
+                  <div className="check-row__spacer"/>
+                </CheckRow>
+              ))
+            }
           </div>
 
-          {/* ── 6. Revenus directs épargne (info only — always applied) ── */}
+          {/* 6. Revenus directs épargne */}
           {directSavingsIncomes.length > 0 && (
-            <div className="input-group-vertical">
-              <label style={{ color: '#2ecc71' }}>Revenus directs → Épargne (appliqués automatiquement)</label>
-              <div className="list-wrapper">
-                {directSavingsIncomes.map(dr => (
-                  <div key={dr.id} className="list-item" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ opacity: 0.8 }}>{dr.sous_comptes_epargne?.nom || 'Enveloppe'}</span>
-                    <span style={{ fontWeight: 600, color: '#2ecc71' }}>
-                      +{Number(dr.montant).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            <div className="month-section">
+              <SectionHeader icon={<Coins size={14}/>} label="Revenus directs → Épargne" colorClass="color-green"/>
+              {directSavingsIncomes.map(dr => (
+                <div key={dr.id} className="direct-saving-row">
+                  <span className="check-row__label">{dr.sous_comptes_epargne?.nom || 'Enveloppe'}</span>
+                  <span className="check-row__amount color-green">+{fmt(dr.montant)}</span>
+                </div>
+              ))}
             </div>
           )}
 
+        </div>{/* fin month-form-scroll */}
+
+        {/* CTA — collé en bas, hors du scroll */}
+        <div className="month-cta">
           <button
             onClick={handleStartMonth}
             className="submit-expense-btn"
-            style={{ marginTop: '16px' }}
             disabled={loading}
           >
             {loading
-              ? <Loader2 className="spinner" size={20} />
-              : `Valider et lancer ${targetMonth?.label}`
+              ? <Loader2 className="spinner" size={20}/>
+              : <><Check size={18}/> Valider {targetMonth?.label}</>
             }
           </button>
-
         </div>
+
       </div>
     </div>
   )
