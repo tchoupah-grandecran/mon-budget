@@ -1,0 +1,124 @@
+.accounts-container {
+  min-height: 100vh;
+  padding: 24px 16px 120px 16px; /* Espace bas augmenté pour la barre de navigation */
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.account-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.section-title h2 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.clickable:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-badge {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.item-amount {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  padding: 20px;
+}
+
+.bank-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.linked-epargnes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 24px;
+  margin-top: 4px;
+  border-left: 1px dashed rgba(255, 255, 255, 0.2);
+  margin-left: 16px;
+}
+
+.linked-epargne-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+
+.linked-epargne-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.item-amount-small {
+  font-weight: 500;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.orphan-item {
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+}
+
+.progress-bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 5px; width: 100%; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: #ffffff; transition: width 0.5s ease; }

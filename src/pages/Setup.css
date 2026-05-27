@@ -1,0 +1,221 @@
+.setup-container {
+  min-height: 100vh;
+  padding: 40px 16px;
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Barre de progression */
+.setup-progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.step-dot.active {
+  border-color: white;
+  background: white;
+  color: var(--bg-dark);
+}
+
+.step-line {
+  height: 1px;
+  width: 40px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Carte de configuration */
+.setup-card {
+  padding: 24px;
+}
+
+.setup-card h2 {
+  font-size: 22px;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.setup-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 24px 0;
+  line-height: 1.4;
+}
+
+.setup-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.setup-section h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+/* Lignes et formulaires */
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.account-form-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 10px;
+}
+
+.account-info-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.account-name-label {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.account-horizon-badge {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Inputs de formulaires */
+input, select {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+input:focus, select:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.wide-input { flex: 1; }
+.narrow-input { width: 100px; text-align: right; }
+
+select option {
+  background: #1a1a1a;
+  color: white;
+}
+
+/* Boutons */
+.btn-add {
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.btn-add:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: white;
+}
+
+.btn-delete {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.btn-delete:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-next, .btn-submit {
+  width: 100%;
+  background: white;
+  color: var(--bg-dark);
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-submit {
+  background: white;
+}
+
+.flex-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-back {
+  flex: 0.5;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

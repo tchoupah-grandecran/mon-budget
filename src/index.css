@@ -1,0 +1,92 @@
+:root {
+  --bg-dark: #121212;
+  --text-main: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Classe utilitaire pour les cartes */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+/* Navigation du bas */
+.bottom-nav {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 12px 24px;
+  width: calc(100% - 32px);
+  max-width: 400px;
+  border-radius: 100px;
+  z-index: 50;
+  background: rgba(20, 20, 20, 0.85); /* Fond légèrement plus opaque pour éviter les conflits visuels */
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  font-size: 11px;
+  transition: color 0.2s;
+}
+
+.nav-item.active {
+  color: white;
+}
+
+.nav-item:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 2. Le conteneur du bouton central */
+.fab-nav-item {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -30px; /* C'est ce qui fait remonter le bouton */
+  outline: none;
+  cursor: pointer;
+}
+
+/* 3. Le cercle du bouton */
+.fab-circle {
+  background: #3b82f6; /* Couleur bleue (change selon ton thème) */
+  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  transition: transform 0.2s ease;
+}
+
+/* 4. Petit effet au clic */
+.fab-circle:active {
+  transform: scale(0.9);
+}

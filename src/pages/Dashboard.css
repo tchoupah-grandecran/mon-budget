@@ -1,0 +1,371 @@
+/* --- Mise en page globale --- */
+.dashboard-container {
+  min-height: 100vh;
+  padding: 24px 16px 100px 16px;
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Ajusté pour rapprocher les cartes */
+}
+
+/* --- En-tête --- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.header-right {
+  display: flex;
+  gap: 12px;
+}
+
+.header-subtitle {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.header-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 4px 0 0 0;
+  letter-spacing: -0.5px;
+}
+
+.icon-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.icon-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* --- Cartes Interactives Communes --- */
+.dashboard-card-clickable {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.dashboard-card-clickable:active {
+  transform: scale(0.99);
+}
+
+.card-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.card-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.card-amount {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 4px 0 0 0;
+  letter-spacing: -0.5px;
+}
+
+/* --- Badges & Délais --- */
+.days-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- Système de Jauges & Progressions --- */
+.gauge-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.gauge-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.gauge-fill {
+  height: 100%;
+  background: white;
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gauge-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.goal-reminder-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+}
+
+/* Variations bleues pour l'épargne */
+.bg-blue-track {
+  background: rgba(168, 224, 255, 0.1);
+}
+
+.bg-blue-fill {
+  background: #a8e0ff;
+  box-shadow: 0 0 8px rgba(168, 224, 255, 0.3);
+}
+
+/* --- Détails Déployés (Menus Déroulants) --- */
+.card-expanded-details {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  animation: fadeIn 0.25s ease-out;
+}
+
+.details-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 12px 0;
+  letter-spacing: 0.5px;
+}
+
+.details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.details-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* --- Blocs des sous-comptes d'épargne --- */
+.sub-account-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.sub-account-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sub-account-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sub-gauge-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.sub-gauge-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.sub-gauge-fill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 2px;
+}
+
+.sub-gauge-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- Pieds de Cartes & Éléments de structure --- */
+.card-footer-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+}
+
+.card-footer-left {
+  display: flex;
+  gap: 16px;
+}
+
+.footer-sub-metric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.expand-chevron-icon {
+  color: rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.expand-chevron-icon.rotate {
+  transform: rotate(180deg);
+}
+
+/* --- Fenêtre Profil & Boutons de Modale --- */
+.profile-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.profile-action-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-action-btn:active {
+  opacity: 0.7;
+}
+
+/* --- Couleurs Sémantiques & Utilitaires --- */
+.text-blue { color: #a8e0ff; }
+.text-green { color: #2ecc71; }
+.text-red { color: #e74c3c; }
+.text-orange { color: #f39c12; }
+.text-purple { color: #9b59b6; }
+
+.font-semibold { font-weight: 600; }
+.font-medium { font-weight: 500; }
+.space-y-3 > * + * { margin-top: 12px; }
+.mt-4 { margin-top: 16px; }
+
+.center-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  gap: 16px;
+}
+
+.spinner { animation: spin 1s linear infinite; }
+
+/* --- Animations --- */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-4px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.half-donut-wrapper {
+  position: relative;
+  width: 240px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.half-donut-svg {
+  width: 100%;
+  height: auto;
+}
+
+.half-donut-center {
+  position: absolute;
+  bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.card-amount-donut {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.gauge-max-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+}
