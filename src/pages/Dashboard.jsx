@@ -103,7 +103,7 @@ export default function Dashboard() {
       }
 
       const { data: variableExpenses } = await supabase
-        .from('depenses')
+        .from('depenses_variables')
         .select('montant')
         .eq('user_id', user.id)
         .eq('mois', selectedMonth)

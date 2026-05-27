@@ -89,7 +89,7 @@ export default function Accounts() {
                   {linkedEpargnes.length > 0 && (
                     <div className="linked-epargnes-container">
                       {linkedEpargnes.map(epargne => {
-                        const progress = (epargne.montant_actuel / (epargne.montant_souhaite || 1)) * 100;
+                        const progress = (epargne.montant_actuel / (epargne.objectif_total || 1)) * 100;
                         return (
                           <div 
                             key={epargne.id} 
