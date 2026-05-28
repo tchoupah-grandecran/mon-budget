@@ -184,16 +184,40 @@ export default function StartMonthModal({ isOpen, onClose, currentBalance, targe
         ...updatedSavings.map(s => supabase.from('sous_comptes_epargne').update({ montant_actuel: s.montant_actuel }).eq('id', s.id))
       ])
 
-      const { error } = await supabase.from('budgets_mensuels').upsert({
-        user_id: user.id,
-        mois: targetMonth.code,
-        total_revenus: revenusTotaux,
-        total_depenses_fixes: depensesFixesTotales,
-        reste_a_vivre_initial: resteAVivre,
-        reste_a_vivre: resteAVivre
-      }, { onConflict: 'user_id, mois' })
+      // On prépare les données du budget
+const budgetPayload = {
+  user_id: user.id,
+  mois: targetMonth.code,
+  total_revenus: revenusTotaux,
+  total_depenses_fixes: depensesFixesTotales,
+  // Sécurité: on s'assure qu'on envoie bien un nombre (fallback à 0 si currentBalance bug)
+  reste_a_vivre_initial: resteAVivre || 0,
+  reste_a_vivre: resteAVivre || 0 
+}
 
-      if (error) throw error
+// 1. On cherche si le mois est déjà initialisé
+const { data: existingBudget } = await supabase
+  .from('budgets_mensuels')
+  .select('id')
+  .eq('user_id', user.id)
+  .eq('mois', targetMonth.code)
+  .maybeSingle()
+
+// 2. On Update ou on Insert manuellement
+if (existingBudget) {
+  const { error } = await supabase
+    .from('budgets_mensuels')
+    .update(budgetPayload)
+    .eq('id', existingBudget.id)
+    
+  if (error) throw error
+} else {
+  const { error } = await supabase
+    .from('budgets_mensuels')
+    .insert([budgetPayload])
+    
+  if (error) throw error
+}
 
       setSalaireVariable('')
       onSuccess()

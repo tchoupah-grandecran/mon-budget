@@ -82,7 +82,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 15px rgba(246, 178, 59, 0.4);
   transition: transform 0.2s ease;
 }
 

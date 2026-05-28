@@ -203,14 +203,38 @@ export default function Dashboard() {
   }
 
   // --- CALCULS ---
+  // --- CALCULS ---
   const formatEUR = (val) =>
     Number(val || 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 })
 
+  // 📅 CALCUL DYNAMIQUE DES JOURS RESTANTS (Synchronisé avec le widget)
   const getDaysRemaining = () => {
     const today = new Date()
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0)
-    return lastDay.getDate() - today.getDate()
+    
+    // Si activeMonthCode n'est pas encore chargé, on fait un calcul classique par défaut
+    if (!activeMonthCode) {
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+      return lastDay.getDate() - today.getDate()
+    }
+
+    const [yearStr, monthStr] = activeMonthCode.split('-')
+    const bYear = parseInt(yearStr, 10)
+    const bMonthIndex = parseInt(monthStr, 10) - 1 // Janvier = 0 en JS
+
+    if (bYear > today.getFullYear() || (bYear === today.getFullYear() && bMonthIndex > today.getMonth())) {
+      // Le budget affiché est dans le futur : on prend la totalité des jours
+      const lastDayOfFutureMonth = new Date(bYear, bMonthIndex + 1, 0)
+      return lastDayOfFutureMonth.getDate()
+    } else if (bYear === today.getFullYear() && bMonthIndex === today.getMonth()) {
+      // Le budget affiché est le mois en cours : on calcule le reste
+      const lastDayOfCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+      return lastDayOfCurrentMonth.getDate() - today.getDate()
+    } else {
+      // Le budget affiché est dans le passé
+      return 0
+    }
   }
+  
   const joursRestants = getDaysRemaining()
 
   const totalLiquiditeReel = data.banques.reduce(
@@ -276,7 +300,7 @@ export default function Dashboard() {
       {/* EN-TÊTE */}
       <header className="dashboard-header">
         <div className="header-left">
-          <span className="header-month">{displayMonthLabel}</span>
+          <span className="header-month">{targetMonth.label}</span>
           <h1 className="header-title">Tableau de bord</h1>
         </div>
         <div className="header-right">
