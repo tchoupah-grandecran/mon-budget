@@ -1,124 +1,424 @@
+/* ── Conteneur global ──────────────────────────────────────── */
 .accounts-container {
   min-height: 100vh;
-  padding: 24px 16px 120px 16px; /* Espace bas augmenté pour la barre de navigation */
+  padding: 24px 16px calc(28px + env(safe-area-inset-bottom, 0px) + 72px);
   max-width: 500px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
 }
 
+/* ── En-tête ────────────────────────────────────────────────── */
+.accounts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0 0;
+}
+
+.header-subtitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(255, 255, 255, 0.4);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.header-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+
+/* ── Carte patrimoine global ────────────────────────────────── */
+.patrimoine-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 22px;
+  border-radius: 20px;
+}
+
+.patrimoine-card__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.patrimoine-card__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.patrimoine-card__amount {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+
+.patrimoine-card__sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.patrimoine-card__sub strong {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.patrimoine-card__icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  background: rgba(96, 165, 250, 0.1);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60a5fa;
+  flex-shrink: 0;
+}
+
+/* ── Section header ─────────────────────────────────────────── */
 .account-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.section-title {
+.accounts-section-hdr {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.7);
+  gap: 10px;
 }
 
-.section-title h2 {
-  font-size: 14px;
+.accounts-section-lbl {
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin: 0;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
 }
 
+.accounts-section-hdr::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Liste ──────────────────────────────────────────────────── */
 .accounts-list {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Carte banque ───────────────────────────────────────────── */
+.bank-card {
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.bank-card__row {
+  display: flex;
+  align-items: center;
   gap: 12px;
-}
-
-.list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-}
-
-.clickable {
+  padding: 16px 14px 16px 16px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.clickable:hover {
-  background: rgba(255, 255, 255, 0.08);
+.bank-card__row:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
-.item-info {
+/* Avatar avec initiales */
+.bank-card__avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: rgba(96, 165, 250, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.18);
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.item-badge {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.item-amount {
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.empty-text {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.4);
-  text-align: center;
-  padding: 20px;
-}
-
-.bank-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.linked-epargnes-container {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-left: 24px;
-  margin-top: 4px;
-  border-left: 1px dashed rgba(255, 255, 255, 0.2);
-  margin-left: 16px;
-}
-
-.linked-epargne-item {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 12px;
-  border: 1px solid transparent;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.linked-epargne-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+.bank-initials {
+  font-size: 13px;
+  font-weight: 700;
+  color: #60a5fa;
+  letter-spacing: 0.5px;
+}
+
+.bank-card__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bank-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bank-card__sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.bank-card__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.bank-card__amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.bank-card__chevron {
+  color: rgba(255, 255, 255, 0.25);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.bank-card__chevron.rotated {
+  transform: rotate(90deg);
+}
+
+/* Bouton ⋯ édition */
+.bank-card__edit-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 8px;
+}
+
+.bank-card__edit-btn:hover {
+  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.bank-card__edit-dot {
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Enveloppes imbriquées ──────────────────────────────────── */
+.epargne-list {
+  padding: 0 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin: 0 4px;
+  padding-top: 8px;
+}
+
+.epargne-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.epargne-row:hover {
+  background: rgba(255, 255, 255, 0.055);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-.item-amount-small {
+.epargne-row__icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: rgba(222, 165, 74, 0.1);
+  border: 1px solid rgba(222, 155, 74, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #D97757;
+  flex-shrink: 0;
+}
+
+.epargne-row__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.epargne-row__name {
+  font-size: 13px;
   font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.epargne-row__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.epargne-row__amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+}
+
+.epargne-row__pct {
+  font-size: 10px;
+  color: #D97757;
+  font-weight: 600;
+}
+
+/* ── Barre de progression ───────────────────────────────────── */
+.progress-bar-bg {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #D97757;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* ── Carte épargne orpheline ────────────────────────────────── */
+.orphan-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px dashed rgba(251, 191, 36, 0.25) !important;
+  background: rgba(251, 191, 36, 0.03) !important;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.orphan-card:hover {
+  background: rgba(251, 191, 36, 0.06) !important;
+  border-color: rgba(251, 191, 36, 0.4) !important;
+}
+
+.orphan-card__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.orphan-card__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.orphan-card__name {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.orphan-item {
-  border: 1px dashed rgba(255, 255, 255, 0.3);
+.orphan-card__hint {
+  font-size: 11px;
+  color: rgba(251, 191, 36, 0.5);
 }
 
-.progress-bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 5px; width: 100%; overflow: hidden; }
-.progress-bar-fill { height: 100%; background: #ffffff; transition: width 0.5s ease; }
+.orphan-card__amount {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Texte vide ─────────────────────────────────────────────── */
+.empty-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  padding: 24px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+/* ── Spinner centré ─────────────────────────────────────────── */
+.center-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

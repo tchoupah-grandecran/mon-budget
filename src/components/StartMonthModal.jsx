@@ -215,7 +215,7 @@ export default function StartMonthModal({ isOpen, onClose, currentBalance, targe
 
         {/* Header */}
         <div className="sheet-header">
-          <h3>Initialiser {targetMonth?.label}</h3>
+          <h3>Initialiser le mois de {targetMonth?.label}</h3>
           <button onClick={onClose} className="close-btn"><X size={20}/></button>
         </div>
 
@@ -365,7 +365,7 @@ export default function StartMonthModal({ isOpen, onClose, currentBalance, targe
           >
             {loading
               ? <Loader2 className="spinner" size={20}/>
-              : <><Check size={18}/> Valider {targetMonth?.label}</>
+              : <><Check size={18}/> Commencer le mois</>
             }
           </button>
         </div>

@@ -59,7 +59,7 @@
   border: 1px solid var(--border);
   border-bottom: none;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  padding: 24px 24px env(safe-area-inset-bottom, 28px);
+  padding: 24px 24px calc(28px + env(safe-area-inset-bottom, 0px));
   max-height: 92dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -200,22 +200,6 @@ select option {
   transform: none;
 }
 
-/* ── Bouton icône (AddFixExpenseTemplate / IncomeManager) ───── */
-.icon-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 11px 13px;
-  background: var(--text-primary);
-  color: var(--bg-dark);
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: opacity var(--transition);
-  flex-shrink: 0;
-}
-
-.icon-button:hover    { opacity: 0.85; }
 .icon-button:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ── Boutons actions profil ─────────────────────────────────── */
