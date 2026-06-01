@@ -1,0 +1,17 @@
+{
+  "name": "Mon Budget",
+  "short_name": "Budget",
+  "description": "Un budget personnel au jour le jour",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#10172C",
+  "theme_color": "#D97757",
+  "icons": [
+    {
+      "src": "/logo192-mb.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
